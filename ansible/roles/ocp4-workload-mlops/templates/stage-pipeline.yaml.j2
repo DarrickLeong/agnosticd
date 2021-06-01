@@ -40,7 +40,7 @@ spec:
       mountPath: /workspace
   steps:
   - name: setup-workspace
-    image: {{pipeline_git_init_image}}
+    image: {{ pipeline_git_init_image }}
     script: |
       #!/bin/bash
       mkdir -p /workspace/model
@@ -125,7 +125,7 @@ spec:
       
       GIT_REV=`cat /workspace/git`
       . /workspace/source/src/seldon/config.sh
-      IMAGE_URL=nexus-docker-labs-nexus.{{route_subdomain}}/{{user}}/$IMAGE_NAME:$GIT_REV
+      IMAGE_URL=nexus-docker-labs-nexus.{{ route_subdomain }}/{{ user }}/$IMAGE_NAME:$GIT_REV
 
       buildah bud --format=docker --tls-verify=$(params.TLSVERIFY) \
       --layers -f /gen-source/Dockerfile.gen \
@@ -153,7 +153,7 @@ spec:
 
       GIT_REV=`cat /workspace/git`
       . /workspace/source/src/seldon/config.sh
-      IMAGE_URL=nexus-docker-labs-nexus.{{route_subdomain}}/{{user}}/$IMAGE_NAME:$GIT_REV
+      IMAGE_URL=nexus-docker-labs-nexus.{{ route_subdomain }}/{{ user }}/$IMAGE_NAME:$GIT_REV
 
       buildah push \
       --tls-verify=$(params.TLSVERIFY) \

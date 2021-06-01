@@ -33,14 +33,14 @@
       kind: Secret
       namespace: openshift-config
       name: pull-secret
-    register: pull_secret
+    register: r_pull_secret
 
   - name: Create pull secret in labs-dm
     k8s:
       definition:
         apiVersion: v1
         kind: Secret      
-        data: "{{pull_secret.resources[0].data}}"              
+        data: "{{ r_pull_secret.resources[0].data }}"              
         metadata:
           name: pull-secret
           namespace: labs-dm
@@ -71,13 +71,13 @@
       kind: ImageStream
       name: rhdm-kieserver-rhel8
       namespace: labs-dm
-    register: kieserver_is
+    register: r_kieserver_is
 
   - name: Clean up rhdm_rhelserver IS
     block:
     - name: Set fact rhdm_rhelserver_tag name
       set_fact: 
-        rhdm_rhelserver_tag: "{{kieserver_is.resources[0].spec.tags[0].name}}"
+        rhdm_rhelserver_tag: "{{ r_kieserver_is.resources[0].spec.tags[0].name }}"
     
     - name: Delete existing rhdm-kieserver-rhel8
       k8s:
@@ -89,10 +89,10 @@
 
     - name: Import rhdm-kieserver-rhel8
       command: >
-        oc import-image rhdm-7/rhdm-kieserver-rhel8:{{rhdm_rhelserver_tag}}
-        --from=registry.redhat.io/rhdm-7/rhdm-kieserver-rhel8:{{rhdm_rhelserver_tag}}
+        oc import-image rhdm-7/rhdm-kieserver-rhel8:{{ rhdm_rhelserver_tag }}
+        --from=registry.redhat.io/rhdm-7/rhdm-kieserver-rhel8:{{ rhdm_rhelserver_tag }}
         --reference-policy=local --confirm -n labs-dm
-    when: kieserver_is.resources | list | length > 0
+    when: r_kieserver_is.resources | list | length > 0
 
   # Install DM CR
   - name: Create CR for DM
@@ -110,10 +110,10 @@
     k8s_info:
       kind: Pod
       label_selectors:
-        - 'service = dm-kieserver'
+        - service = dm-kieserver
       namespace: labs-dm
-    register: pod_status
-    until: (pod_status | json_query("resources[0].status.containerStatuses[0].ready") | bool) == true
+    register: r_pod_status
+    until: (r_pod_status | json_query("resources[0].status.containerStatuses[0].ready") | bool) == true
     retries: 400
     delay: 10
     

@@ -6,13 +6,13 @@
       apiVersion: operators.coreos.com/v1alpha1
       kind: CatalogSource
       metadata:
-        name: "{{catalog.name}}"
+        name: "{{ catalog.name }}"
         namespace: openshift-marketplace
       spec:
         sourceType: grpc
-        image: "{{catalog.image}}"
-        displayName: "{{catalog.name}}"
-  loop: "{{catalog_snaphots}}"
+        image: "{{ catalog.image }}"
+        displayName: "{{ catalog.name }}"
+  loop: "{{ catalog_snaphots }}"
   loop_control:
     loop_var: catalog
-    label: "{{catalog.name}}"
+    label: "{{ catalog.name }}"

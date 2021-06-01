@@ -11,7 +11,7 @@
       client_id: "admin-cli"
     body_format: form-urlencoded
     status_code: 200,201,204
-  register: codeready_sso_admin_token
+  register: r_codeready_sso_admin_token
 
 - name: Add user {{ user }} to Che
   uri:
@@ -20,7 +20,7 @@
     method: POST
     headers:
       Content-Type: application/json
-      Authorization: "Bearer {{ codeready_sso_admin_token.json.access_token }}"
+      Authorization: "Bearer {{ r_codeready_sso_admin_token.json.access_token }}"
     body:
       username: "{{ user }}"
       enabled: true

@@ -8,10 +8,10 @@
   k8s_info:
     kind: Pod
     label_selectors:
-      - 'app=jupyterhub'
+      - app = jupyterhub
     namespace: labs-infra
-  register: pod_status
-  until: (pod_status | json_query("resources[0].status.containerStatuses[0].ready") | bool) == true
-  retries: 400
-  delay: 2
+  register: r_pod_status
+  until: (r_pod_status | json_query("resources[0].status.containerStatuses[0].ready") | bool) == true
+  retries: 80
+  delay: 10
 

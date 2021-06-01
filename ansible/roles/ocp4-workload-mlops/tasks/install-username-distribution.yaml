@@ -11,10 +11,10 @@
   k8s:
     state: absent
     definition:
-      apiVersion: "{{item.apiVersion}}"
-      kind: "{{item.kind}}"
+      apiVersion: "{{ item.apiVersion }}"
+      kind: "{{ item.kind }}"
       metadata:
-        name: "{{item.name}}"
+        name: "{{ item.name }}"
         namespace: labs-infra
   loop:
     - {'apiVersion': 'apps.openshift.io/v1', 'kind': 'DeploymentConfig', 'name': 'redis'}
@@ -50,8 +50,8 @@
     field_selectors:
       - status.phase=Running
   register: r_redis_pod
-  retries: 400
-  delay: 2
+  retries: 80
+  delay: 10
   until: r_redis_pod.resources | list | length == 1
 
 - name: url var
@@ -103,4 +103,4 @@
         tls:
           termination: edge
           insecureEdgeTerminationPolicy: Redirect
-  register: Route
+  register: r_Route

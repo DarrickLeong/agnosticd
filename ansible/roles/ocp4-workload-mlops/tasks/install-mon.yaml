@@ -6,7 +6,7 @@
     api_version: project.openshift.io/v1
     definition:
       metadata:
-        name: "{{item}}"
+        name: "{{ item }}"
         annotations:
           openshift.io/description: ""
           openshift.io/display-name: "Lab Infrastructure"
@@ -62,7 +62,7 @@
     kind: OperatorGroup
     name: labs-prometheus-operator-group
     namespace: labs-prometheus
-  register: check_namespace
+  register: r_check_namespace
   
 - name: Wait for prometheus operator group to appear
   k8s_info:
@@ -70,9 +70,9 @@
     kind: OperatorGroup
     name: labs-prometheus-operator-group
     namespace: labs-prometheus
-  register: result
-  until: result | json_query("resources[0].status.namespaces") | length == 1
-  when: not (check_namespace | json_query("resources[0].spec.selector")) # Allows reentrant
+  register: r_result
+  until: r_result | json_query("resources[0].status.namespaces") | length == 1
+  when: not (r_check_namespace | json_query("resources[0].spec.selector")) # Allows reentrant
   retries: 400
   delay: 2
 

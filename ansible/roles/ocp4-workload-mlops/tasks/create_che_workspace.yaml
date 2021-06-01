@@ -11,7 +11,7 @@
       client_id: "admin-cli"
     body_format: form-urlencoded
     status_code: 200
-  register: user_token
+  register: r_user_token
   
 - name: Create workspace for {{ user }} from devfile
   uri:
@@ -20,8 +20,8 @@
     method: POST
     headers:
       Content-Type: application/json
-      Authorization: "Bearer {{ user_token.json.access_token }}"
+      Authorization: "Bearer {{ r_user_token.json.access_token }}"
     body: "{{ lookup('template', './templates/devfile.json.j2') }}"
     body_format: json
     status_code: 201,409
-  register: workspace_def
+  register: r_workspace_def

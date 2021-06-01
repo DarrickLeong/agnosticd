@@ -17,13 +17,13 @@
     api_version: v1
     namespace: openshift-operators
     label_selectors: 
-     - "{{label_selector}}"
+     - "{{ label_selector }}"
     field_selectors:
       - status.phase=Running  
-  register: result
-  until: result.resources | length == 1
-  retries: 400
-  delay: 2
+  register: r_result
+  until: r_result.resources | length == 1
+  retries: 80
+  delay: 10
   loop:
     - name = opendatahub-operator
     - name = openshift-pipelines-operator

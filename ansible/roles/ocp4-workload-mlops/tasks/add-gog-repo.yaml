@@ -7,7 +7,7 @@
     force_basic_auth: true
     status_code: 200,404
     validate_certs: false
-  register: repo_result
+  register: r_repo_result
 
 - name: Create git repository {{ repository.name }} for {{ user }}
   uri:
@@ -20,7 +20,7 @@
     status_code: 200,201
     force_basic_auth: true
     validate_certs: false
-  when: repo_result.status != 200
+  when: r_repo_result.status != 200
 
 - name: Create repositories
   git:
@@ -29,10 +29,10 @@
     force: true
 
 - name: Push {{ repository.name }} to git repository in Gogs for {{ user }}
-  command: "{{item}}"
+  command: "{{ item }}"
   args:
     chdir: "{{ tmp_dir }}/{{ repository.name }}"
-  when: repo_result.status != 200    
+  when: r_repo_result.status != 200    
   loop:
     - git -c http.sslVerify=false remote add {{ user }} https://{{ user }}:{{ gogs_pwd }}@gogs-labs-infra.{{ route_subdomain }}/{{ user }}/{{ repository.name }}.git
     - git -c http.sslVerify=false config --local user.email "{{ user }}@example.com"
@@ -41,38 +41,38 @@
 
 - name: Get web hooks
   uri:
-    url: https://gogs-labs-infra.{{ route_subdomain }}/api/v1/repos/{{user}}/{{ repository.name }}/hooks 
-    user: "{{user}}"
-    password: "{{gogs_pwd}}"
+    url: https://gogs-labs-infra.{{ route_subdomain }}/api/v1/repos/{{ user }}/{{ repository.name }}/hooks 
+    user: "{{ user }}"
+    password: "{{ gogs_pwd }}"
     force_basic_auth: true
     body_format: json
     validate_certs: false
-  register: webhook
+  register: r_webhook
 
 - name:  Delete web hooks
   uri:
-    url: https://gogs-labs-infra.{{ route_subdomain }}/api/v1/repos/{{user}}/{{ repository.name }}/hooks/{{item.id}}
-    user: "{{user}}"
-    password: "{{gogs_pwd}}"
+    url: https://gogs-labs-infra.{{ route_subdomain }}/api/v1/repos/{{ user }}/{{ repository.name }}/hooks/{{ item.id }}
+    user: "{{ user }}"
+    password: "{{ gogs_pwd }}"
     force_basic_auth: true
     method: delete
     status_code: 204
     validate_certs: false
-  loop: "{{webhook.json}}"
+  loop: "{{ r_webhook.json }}"
   loop_control:
-    label: "{{item.id}}"
+    label: "{{ item.id }}"
 
 - name: Configure web hook
   uri:
     url: https://gogs-labs-infra.{{ route_subdomain }}/api/v1/repos/{{ user }}/{{ repository.name }}/hooks
-    user: "{{user}}"
-    password: "{{gogs_pwd}}"
+    user: "{{ user }}"
+    password: "{{ gogs_pwd }}"
     method: POST
     validate_certs: false
     body: 
       type: gogs
       config:
-        url: "{{repository.webhook}}"
+        url: "{{ repository.r_webhook }}"
         content_type: json
       events:
       - push

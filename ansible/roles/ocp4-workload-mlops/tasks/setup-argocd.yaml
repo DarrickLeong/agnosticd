@@ -6,7 +6,7 @@
       kind: Secret
       apiVersion: v1
       metadata:
-        name: repo-{{user}}-deploy
+        name: repo-{{ user }}-deploy
         namespace: labs-argocd
       data:
         password: "{{ gogs_pwd | b64encode }}"
@@ -18,5 +18,5 @@
   vars:
     user: "{{ item[0] }}"
     ns: "{{ item[0] }}-{{ item[1] }}"    
-    env: "{{item[1]}}"    
+    env: "{{ item[1] }}"    
   loop: "{{ users|product(['stage', 'prod'])|list }}"

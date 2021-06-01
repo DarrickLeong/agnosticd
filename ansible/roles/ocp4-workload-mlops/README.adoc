@@ -154,7 +154,7 @@ You can now `oc rsync` the workshop https://github.com/rh-mlops-workshop/ocp-al-
   tags:
     - step007
   roles:
-    - { role: "{{ocp_workload}}", when: 'ocp_workload is defined' }
+    - { role: "{{ ocp_workload }}", when: 'ocp_workload is defined' }
 ----
 NOTE: You might want to change `hosts: all` to fit your requirements
 

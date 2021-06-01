@@ -11,7 +11,7 @@
       client_id: "admin-cli"
     body_format: form-urlencoded
     status_code: 200
-  register: user_token
+  register: r_user_token
 
 - name: Get workspace for {{ user }}
   uri:
@@ -20,19 +20,19 @@
     method: GET
     headers:
       Accept: application/json
-      Authorization: "Bearer {{ user_token.json.access_token }}"
+      Authorization: "Bearer {{ r_user_token.json.access_token }}"
     status_code: 200
-  register: workspace_def
+  register: r_workspace_def
 
 - name: Verify and start workspace for {{ user }} again if stopped
-  when: workspace_def.json[0].status == "STOPPED"
+  when: r_workspace_def.json[0].status == "STOPPED"
   uri:
-    url: "https://codeready-labs-infra.{{ route_subdomain }}/api/workspace/{{ workspace_def.json[0].id }}/runtime"
+    url: "https://codeready-labs-infra.{{ route_subdomain }}/api/workspace/{{ r_workspace_def.json[0].id }}/runtime"
     validate_certs: false
     method: POST
     headers:
       Accept: application/json
-      Authorization: "Bearer {{ user_token.json.access_token }}"
+      Authorization: "Bearer {{ r_user_token.json.access_token }}"
     status_code: 200
 
 

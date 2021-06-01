@@ -3,12 +3,12 @@
   k8s_info:
     api_version: apiextensions.k8s.io/v1beta1
     kind: CustomResourceDefinition
-    name: "{{operator_crd}}"
-  register: ready_crd
+    name: "{{ operator_crd }}"
+  register: r_ready_crd
   retries: 400
   delay: 2
-  until: ready_crd.resources | list | length == 1
-  loop: "{{crds_to_wait}}"
+  until: r_ready_crd.resources | list | length == 1
+  loop: "{{ crds_to_wait }}"
   loop_control:
     loop_var: operator_crd
 
@@ -16,13 +16,13 @@
   k8s_info:
     kind: Pod
     label_selectors:
-     - "{{operator.key}} = {{operator.value}}"
-    namespace: "{{operator_ns}}"
-  register: pod_status
-  until: (pod_status | json_query("resources[0].status.containerStatuses[0].ready") | bool) == true
+     - "{{ operator.key }} = {{ operator.value }}"
+    namespace: "{{ operator_ns }}"
+  register: r_pod_status
+  until: (r_pod_status | json_query("resources[0].status.containerStatuses[0].ready") | bool) == true
   retries: 400
   delay: 2
-  loop: "{{operators_to_wait}}"
+  loop: "{{ operators_to_wait }}"
   loop_control:
     loop_var: operator
   

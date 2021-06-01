@@ -1,7 +1,7 @@
 ---
-- name: Get existing {{user}}
+- name: Get existing {{ user }}
   uri:
-    url: https://gogs-labs-infra.{{ route_subdomain }}/api/v1/users/{{user}}
+    url: https://gogs-labs-infra.{{ route_subdomain }}/api/v1/users/{{ user }}
     method: GET
     user: "{{ gogs_admin_user }}"
     password: "{{ gogs_admin_password }}"
@@ -9,9 +9,9 @@
     body_format: json
     validate_certs: false
     status_code: 404, 200
-  register: result
+  register: r_result
   
-- name: Add {{user}} to Gogs
+- name: Add {{ user }} to Gogs
   uri:
     url: https://gogs-labs-infra.{{ route_subdomain }}/api/v1/admin/users
     method: POST
@@ -28,11 +28,11 @@
     body_format: json
     status_code: 200,201,204
     validate_certs: false
-  when: result.status == 404 #User not found
+  when: r_result.status == 404 #User not found
 
 - name: Add repo
   include_tasks: add-gog-repo.yaml  
-  loop: "{{repositories}}"
+  loop: "{{ repositories }}"
   loop_control:
     loop_var: repository
-    label: "{{repository.name}}"
+    label: "{{ repository.name }}"

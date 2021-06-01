@@ -6,8 +6,8 @@ metadata:
 spec:
   source: 
     git:
-      uri: "{{s2i_ansible_scm_url}}"
-      ref: "{{s2i_ansible_scm_ref}}"
+      uri: "{{ s2i_ansible_scm_url }}"
+      ref: "{{ s2i_ansible_scm_ref }}"
   strategy:
     dockerStrategy:   
       from:
@@ -16,9 +16,9 @@ spec:
         namespace: openshift
       env:
         - name: GIT_URL
-          value: "{{user_setup_scm_url}}"
+          value: "{{ user_setup_scm_url }}"
         - name: GIT_REFSPEC
-          value: "{{user_setup_scm_ref}}"
+          value: "{{ user_setup_scm_ref }}"
     type: Docker
   output: 
     to:

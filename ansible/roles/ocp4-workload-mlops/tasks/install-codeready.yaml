@@ -38,8 +38,8 @@
   uri:
     url: https://codeready-labs-infra.{{ route_subdomain }}/dashboard/
     validate_certs: false
-  register: result
-  until: result.status == 200
+  register: r_result
+  until: r_result.status == 200
   retries: 400
   delay: 2
 
@@ -48,15 +48,15 @@
     kind: Secret
     namespace: labs-infra
     name: che-identity-secret
-  register: sso_secret
+  register: r_sso_secret
 
 - name: set codeready username fact
   set_fact:
-    codeready_sso_admin_username: "{{ sso_secret.resources[0].data.user | b64decode }}"
+    codeready_sso_admin_username: "{{ r_sso_secret.resources[0].data.user | b64decode }}"
 
 - name: set codeready password fact
   set_fact:
-    codeready_sso_admin_password: "{{ sso_secret.resources[0].data.password | b64decode }}"
+    codeready_sso_admin_password: "{{ r_sso_secret.resources[0].data.password | b64decode }}"
 
 - name: show codeready keycloak admin username
   debug:
@@ -71,10 +71,10 @@
 
 - name: wait for keycloak to return
   command: oc rollout -n labs-infra status --timeout=1m -w deployment/keycloak
-  register: cmd_res
+  register: r_cmd_res
   retries: 400
   delay: 2
-  until: cmd_res.rc == 0
+  until: r_cmd_res.rc == 0
 
 - name: get keycloak pod
   k8s_info:
@@ -101,7 +101,7 @@
       client_id: "admin-cli"
     body_format: form-urlencoded
     status_code: 200,201,204
-  register: codeready_sso_admin_token
+  register: r_codeready_sso_admin_token
 
 - name: Increase codeready access token lifespans
   uri:
@@ -110,7 +110,7 @@
     method: PUT
     headers:
       Content-Type: application/json
-      Authorization: "Bearer {{ codeready_sso_admin_token.json.access_token }}"
+      Authorization: "Bearer {{ r_codeready_sso_admin_token.json.access_token }}"
     body:
       accessTokenLifespan: 28800
       accessTokenLifespanForImplicitFlow: 28800

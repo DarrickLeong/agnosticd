@@ -10,7 +10,7 @@
     kind: ArgoCD
     name: argocd
     namespace: labs-argocd
-  register: result
-  until: result | json_query("resources[0].status.phase=='Available'")
+  register: r_result
+  until: r_result | json_query("resources[0].status.phase=='Available'")
   retries: 400
   delay: 2

@@ -1,14 +1,14 @@
 metadata:
-  name: "{{user}}-workspace"
+  name: "{{ user }}-workspace"
 projects:
-  - name: "{{user_source_repo_name}}"
+  - name: "{{ user_source_repo_name }}"
     source:
-      location: "http://{{user}}:{{gogs_pwd}}@gogs-labs-infra.{{ route_subdomain }}/{{user}}/{{user_source_repo_name}}"
+      location: "http://{{ user }}:{{ gogs_pwd }}@gogs-labs-infra.{{ route_subdomain }}/{{ user }}/{{ user_source_repo_name }}"
       type: git
       branch: master
-  - name: "{{user_deploy_repo_name}}"
+  - name: "{{ user_deploy_repo_name }}"
     source:
-      location: "http://{{user}}:{{gogs_pwd}}@gogs-labs-infra.{{ route_subdomain }}/{{user}}/{{user_deploy_repo_name}}"
+      location: "http://{{ user }}:{{ gogs_pwd }}@gogs-labs-infra.{{ route_subdomain }}/{{ user }}/{{ user_deploy_repo_name }}"
       type: git
       branch: master
 components:
@@ -60,11 +60,11 @@ components:
                   value: Dev
               envFrom:
               - secretRef:
-                  name: {{user}}-mlflow-obc
+                  name: {{ user }}-mlflow-obc
               - configMapRef:
-                  name: {{user}}-mlflow-obc
+                  name: {{ user }}-mlflow-obc
               - configMapRef:
-                  name: {{user}}-mlflow-cm
+                  name: {{ user }}-mlflow-cm
             volumes:
             - name: projects
               persistentVolumeClaim:
@@ -79,5 +79,5 @@ commands:
       - workdir: '${CHE_PROJECTS_ROOT}'
         type: exec
         command: >-
-          oc login https://$KUBERNETES_SERVICE_HOST:$KUBERNETES_SERVICE_PORT --insecure-skip-tls-verify=true -u {{user}} -p {{workshop_openshift_user_password}}
+          oc login https://$KUBERNETES_SERVICE_HOST:$KUBERNETES_SERVICE_PORT --insecure-skip-tls-verify=true -u {{ user }} -p {{ workshop_openshift_user_password }}
         component: python-tools

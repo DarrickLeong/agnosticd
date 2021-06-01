@@ -1,7 +1,7 @@
 ---
 - name: Check whether nexus is installed
   command: helm list -n labs-nexus --filter nexus --deployed
-  register: result
+  register: r_result
 
 # Each image is about 500+ MB
 - name: Install nexus 
@@ -9,15 +9,15 @@
     helm install nexus rhmlops/nexus -n labs-nexus 
     --set sonatype-nexus.nexus.resources.requests.cpu=2
     --set sonatype-nexus.nexus.resources.requests.memory=4Gi    
-    --set sonatype-nexus.persistence.storageSize={{((users | length) * 15)| round(0, 'ceil') | int}}Gi
-  when: "'deployed' not in result.stdout"
+    --set sonatype-nexus.persistence.storageSize={{ ((users | length) * 15)| round(0, 'ceil') | int }}Gi
+  when: "'deployed' not in r_result.stdout"
 
 - name: Wait for nexus to be ready
   uri:
     url: https://nexus-labs-nexus.{{ route_subdomain }}/
     validate_certs: false
-  register: result
-  until: result.status == 200
+  register: r_result
+  until: r_result.status == 200
   retries: 400
   delay: 2
 

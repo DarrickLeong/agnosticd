@@ -15,7 +15,7 @@
 
 - name: "Create Infra Project"
   include_tasks: create-infra-project.yaml
-  loop: "{{infra_projects}}"
+  loop: "{{ infra_projects }}"
   loop_control:
     loop_var: name  
     
@@ -87,28 +87,19 @@
 # Each job takes about XXX minutes
 - name: Wait for all users jobs to finish
   k8s_info:
-    name: "{{user}}-setup"
+    name: "{{ user }}-setup"
     namespace: labs-setup
     kind: Job
-  register: job_status
-  until: job_status | json_query("resources[0].status.succeeded")
+  register: r_job_status
+  until: r_job_status | json_query("resources[0].status.succeeded")
   retries: 400
   delay: 2
-  loop: "{{users}}"
+  loop: "{{ users }}"
   loop_control:
     loop_var: user
 
 - name: install argocd
   include_tasks: install-argocd.yaml
-
-# - name: Delete temp project
-#   k8s:
-#     state: absent
-#     kind: Project
-#     api_version: project.openshift.io/v1
-#     name: "{{item}}"    
-#   loop:
-#     - labs-setup
 
 # Leave this as the last task in the playbook.
 - name: workload tasks complete

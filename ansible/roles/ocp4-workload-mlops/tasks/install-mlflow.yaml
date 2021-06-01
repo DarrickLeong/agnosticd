@@ -1,25 +1,25 @@
 ---
 - name: Check whether mlflow is installed
-  command: helm list -n {{item}}-dev --filter mlflow --deployed
-  loop: "{{users}}"
-  register: results
+  command: helm list -n {{ item }}-dev --filter mlflow --deployed
+  loop: "{{ users }}"
+  register: r_results
 
 - name: Install mlflow 
-  command: helm install mlflow rhmlops/mlflow -n {{item.item}}-dev  
+  command: helm install mlflow rhmlops/mlflow -n {{ item.item }}-dev  
   when: "'deployed' not in item.stdout"
-  loop: "{{ results.results }}"
+  loop: "{{ r_results.r_results }}"
   loop_control:
-    label: "{{item.item}}"
+    label: "{{ item.item }}"
 
 - name: Wait for mlflow to be ready
   uri:
-    url: https://mlflow-{{item.item}}-dev.{{ route_subdomain }}/
+    url: https://mlflow-{{ item.item }}-dev.{{ route_subdomain }}/
     validate_certs: false
-  register: result
-  until: result.status == 200
+  register: r_result
+  until: r_result.status == 200
   retries: 400
   delay: 2
   when: "'deployed' not in item.stdout"
-  loop: "{{ results.results }}"
+  loop: "{{ r_results.r_results }}"
   loop_control:
-    label: "{{item.item}}"
+    label: "{{ item.item }}"

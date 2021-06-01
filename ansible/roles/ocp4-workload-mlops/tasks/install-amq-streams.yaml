@@ -39,9 +39,9 @@
   k8s_info:
     kind: Pod
     label_selectors:
-      - 'strimzi.io/name = kafka-entity-operator'
+      - strimzi.io/name = kafka-entity-operator
     namespace: labs-kafka
-  register: pod_status
-  until: (pod_status | json_query("resources[0].status.containerStatuses[0].ready") | bool) == true
+  register: r_pod_status
+  until: (r_pod_status | json_query("resources[0].status.containerStatuses[0].ready") | bool) == true
   retries: 400
   delay: 2

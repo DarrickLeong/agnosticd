@@ -4,15 +4,15 @@
     kind: Secret
     namespace: labs-infra
     name: che-identity-secret
-  register: sso_secret
+  register: r_sso_secret
 
 - name: set codeready username fact
   set_fact:
-    codeready_sso_admin_username: "{{ sso_secret.resources[0].data.user | b64decode }}"
+    codeready_sso_admin_username: "{{ r_sso_secret.resources[0].data.user | b64decode }}"
 
 - name: set codeready password fact
   set_fact:
-    codeready_sso_admin_password: "{{ sso_secret.resources[0].data.password | b64decode }}"
+    codeready_sso_admin_password: "{{ r_sso_secret.resources[0].data.password | b64decode }}"
 
 - name: show codeready keycloak admin username
   debug:

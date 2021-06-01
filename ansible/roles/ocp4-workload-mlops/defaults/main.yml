@@ -19,10 +19,10 @@ user_source_repo_name: rh-mlops-workshop
 
 repositories:
   - base: https://github.com/rh-mlops-workshop/
-    name: "{{user_source_repo_name}}"
+    name: "{{ user_source_repo_name }}"
     webhook: http://el-pipeline.{{ user }}-stage.svc.cluster.local:8080
   - base: https://github.com/rh-mlops-workshop/
-    name: "{{user_deploy_repo_name}}"
+    name: "{{ user_deploy_repo_name }}"
     webhook: http://argocd-server.labs-argocd.svc.cluster.local:80/api/webhook 
     
 data_repo_name: creditcard
@@ -74,7 +74,7 @@ images_to_seed:
   - name: rh-mlops-workshop-notebook
     uri: quay.io/ltsai/rh-mlops-workshop-notebook:3.6
   - name: pipelines-git-init-rhel8
-    uri: "{{pipeline_git_init_image}}"
+    uri: "{{ pipeline_git_init_image }}"
 
 consumer_app_image: quay.io/kwkoo/kafka-consumer:latest
 
@@ -113,9 +113,9 @@ s2i_ansible_scm_ref: main
 
 catalog_snapshot_tag: v4.6_2021_04_28
 catalog_snaphots:
-  - image: quay.io/ltsai/olm_snapshot_certified_catalog:{{catalog_snapshot_tag}}
+  - image: quay.io/ltsai/olm_snapshot_certified_catalog:{{ catalog_snapshot_tag }}
     name: olm-snapshot-certified-catalog
-  - image: quay.io/ltsai/olm_snapshot_community_catalog:{{catalog_snapshot_tag}}
+  - image: quay.io/ltsai/olm_snapshot_community_catalog:{{ catalog_snapshot_tag }}
     name: olm-snapshot-community-catalog
-  - image: quay.io/ltsai/olm_snapshot_redhat_catalog:{{catalog_snapshot_tag}}
+  - image: quay.io/ltsai/olm_snapshot_redhat_catalog:{{ catalog_snapshot_tag }}
     name: olm-snapshot-redhat-catalog

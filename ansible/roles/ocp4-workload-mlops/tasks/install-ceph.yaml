@@ -51,12 +51,12 @@
 # Takes about 300s
 - name: "Wait for OCS CR instances to be Ready"
   k8s_info:
-    api_version: "{{item.api_version}}"
-    kind: "{{item.kind}}"
-    name: "{{item.name}}"
+    api_version: "{{ item.api_version }}"
+    kind: "{{ item.kind }}"
+    name: "{{ item.name }}"
     namespace: "{{ ceph_storage.ceph_namespace }}"
-  register: out
-  until: out | json_query("resources[0].status.phase=='Ready'")
+  register: r_out
+  until: r_out | json_query("resources[0].status.phase=='Ready'")
   retries: 400
   delay: 10
   loop:

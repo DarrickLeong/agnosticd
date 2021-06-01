@@ -3,19 +3,19 @@
   k8s:
     api_version: v1
     kind: Pod
-    name: "jupyterhub-nb-{{user}}"
+    name: "jupyterhub-nb-{{ user }}"
     namespace: labs-infra
     state: absent
     
-- name: Create {{user}} pvc
+- name: Create {{ user }} pvc
   k8s:
     definition:
       kind: PersistentVolumeClaim
       apiVersion: v1
       metadata:
         annotations:
-          hub.jupyter.org/username: "{{user}}"
-        name: "jupyterhub-nb-{{user}}-pvc"
+          hub.jupyter.org/username: "{{ user }}"
+        name: "jupyterhub-nb-{{ user }}-pvc"
         namespace: labs-infra
         labels:
           app: jupyterhub
@@ -32,18 +32,18 @@
 - name: delete git job
   k8s:        
     state: absent
-    name: "{{user}}-jupyterhub-pvc-setup"
+    name: "{{ user }}-jupyterhub-pvc-setup"
     namespace: labs-infra
     api_version: batch/v1
     kind: Job
 
-- name: Setup git repo for {{user}}
+- name: Setup git repo for {{ user }}
   k8s:
     definition:
       apiVersion: batch/v1
       kind: Job
       metadata:
-        name: "{{user}}-jupyterhub-pvc-setup"
+        name: "{{ user }}-jupyterhub-pvc-setup"
         namespace: labs-infra
       spec:
         selector: {}
@@ -58,9 +58,9 @@
                   - /bin/sh
                   - -c
                   - |
-                    [ -d '/opt/app-root/src/{{repositories[0].name}}' ] && rm -rf /opt/app-root/src/{{user_source_repo_name}}
+                    [ -d '/opt/app-root/src/{{ repositories[0].name }}' ] && rm -rf /opt/app-root/src/{{ user_source_repo_name }}
                     cd /opt/app-root/src
-                    git clone http://{{user}}:{{gogs_pwd}}@gogs-labs-infra.{{ route_subdomain }}/{{user}}/{{user_source_repo_name}}
+                    git clone http://{{ user }}:{{ gogs_pwd }}@gogs-labs-infra.{{ route_subdomain }}/{{ user }}/{{ user_source_repo_name }}
                 volumeMounts:
                 - mountPath: /opt/app-root/src
                   name: projects
@@ -68,16 +68,16 @@
             volumes:
             - name: projects
               persistentVolumeClaim:
-                claimName: "jupyterhub-nb-{{user}}-pvc"
+                claimName: "jupyterhub-nb-{{ user }}-pvc"
         backoffLimit: 4
 
 - name: Wait until git repo setup for jupyterhub job is done
   k8s_info:
-    name: "{{user}}-jupyterhub-pvc-setup"
+    name: "{{ user }}-jupyterhub-pvc-setup"
     kind: Job
     namespace: labs-infra
-  register: job_status
-  until: job_status | json_query("resources[0].status.succeeded")
+  register: r_job_status
+  until: r_job_status | json_query("resources[0].status.succeeded")
   retries: 400
   delay: 2
   ignore_errors: yes
@@ -85,7 +85,7 @@
 - name: delete git job
   k8s:        
     state: absent
-    name: "{{user}}-jupyterhub-pvc-setup"
+    name: "{{ user }}-jupyterhub-pvc-setup"
     namespace: labs-infra
     api_version: batch/v1
     kind: Job

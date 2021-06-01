@@ -7,7 +7,7 @@
     force_basic_auth: true
     status_code: 200,404
     validate_certs: false
-  register: repo_result
+  register: r_repo_result
 
 - block:
     - name: Create git repository {{ data_repo_name }} for user {{ user }}
@@ -27,41 +27,41 @@
         api_version: v1
         kind: Secret
         name: mlflow-obc
-        namespace: "{{user}}-dev"
-      register: result
+        namespace: "{{ user }}-dev"
+      register: r_result
 
     - set_fact:
-        aws_access_key: "{{ result.resources[0].data['AWS_ACCESS_KEY_ID'] | b64decode }}"
-        aws_secret_key: "{{ result.resources[0].data['AWS_SECRET_ACCESS_KEY'] | b64decode }}"
+        aws_access_key: "{{ r_result.resources[0].data['AWS_ACCESS_KEY_ID'] | b64decode }}"
+        aws_secret_key: "{{ r_result.resources[0].data['AWS_SECRET_ACCESS_KEY'] | b64decode }}"
 
     - name: Get bucket name for user {{ user }}
       k8s_info:
         api_version: v1
         kind: ConfigMap
         name: mlflow-obc
-        namespace: "{{user}}-dev"
-      register: result
+        namespace: "{{ user }}-dev"
+      register: r_result
 
     - set_fact:
-        bucket_name: "{{ result.resources[0].data['BUCKET_NAME'] }}"
+        bucket_name: "{{ r_result.resources[0].data['BUCKET_NAME'] }}"
 
     - name: Create temporary git directory
       tempfile:
         state: directory
         suffix: git
-      register: tempfile_1
+      register: r_tempfile_1
 
     - set_fact:
-        download_file: "{{tempfile_1.path}}/data.tar.bz2"
-        output_dir: "{{tempfile_1.path}}/output"
+        download_file: "{{ r_tempfile_1.path }}/data.tar.bz2"
+        output_dir: "{{ r_tempfile_1.path }}/output"
 
     - name: Setup data repo for user {{ user }}
       shell: |                
-        gdown --id {{data_gdrive_id}} -O "{{download_file}}"        
-        mkdir -p {{output_dir}}
-        tar -C {{output_dir}} -xvjf {{download_file}}
+        gdown --id {{ data_gdrive_id }} -O "{{ download_file }}"        
+        mkdir -p {{ output_dir }}
+        tar -C {{ output_dir }} -xvjf {{ download_file }}
           
-        cd {{output_dir}}
+        cd {{ output_dir }}
         rm -rf .git .dvc *.dvc
 
         git init
@@ -71,7 +71,7 @@
 
         dvc init        
         dvc remote add -d myremote s3://{{ bucket_name }}/dvcf4g2
-        dvc remote modify myremote endpointurl https://s3-openshift-storage.{{route_subdomain}}
+        dvc remote modify myremote endpointurl https://s3-openshift-storage.{{ route_subdomain }}
         git commit -a -m "Initialize DVC"
 
         dvc add *.csv
@@ -84,7 +84,7 @@
 
         dvc push
       environment:
-        AWS_ACCESS_KEY_ID: "{{aws_access_key}}"
-        AWS_SECRET_ACCESS_KEY: "{{aws_secret_key}}"   
+        AWS_ACCESS_KEY_ID: "{{ aws_access_key }}"
+        AWS_SECRET_ACCESS_KEY: "{{ aws_secret_key }}"   
     
-  when: repo_result.status != 200
+  when: r_repo_result.status != 200

@@ -22,16 +22,16 @@
 - name: Start ansible image build and wait for it to finish
   command: oc start-build ansible-pb-build -n labs-setup -w
 
-- name: Delete job for user setup
+- name: Delete any existing user setup jobs
   k8s:
     state: absent
     definition:
       apiVersion: batch/v1
       kind: Job
       metadata:
-        name: "{{user}}-setup"
+        name: "{{ user }}-setup"
         namespace: labs-setup
-  loop: "{{users}}"
+  loop: "{{ users }}"
   loop_control:
     loop_var: user
     
@@ -42,22 +42,22 @@
       apiVersion: batch/v1
       kind: Job
       metadata:
-        name: "{{user}}-setup"
+        name: "{{ user }}-setup"
         namespace: labs-setup
       spec:
         template:
           metadata:
-            name: "{{user}}-setup"
+            name: "{{ user }}-setup"
           spec:
             containers:
               - name: ansible-pb
                 image: image-registry.openshift-image-registry.svc:5000/labs-setup/ansible-pb:latest
                 env:
                   - name: user
-                    value: "{{user}}"                  
+                    value: "{{ user }}"                  
             restartPolicy: Never   
             serviceAccountName: ansible
             serviceAccount: ansible             
-  loop: "{{users}}"
+  loop: "{{ users }}"
   loop_control:
     loop_var: user
